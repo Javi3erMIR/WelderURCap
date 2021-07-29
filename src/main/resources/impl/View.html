@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fronius Setup</title>
+    <style>
+			input {
+                display: inline-block;
+				width: 150px;
+				height: 25px;
+			}
+
+			label {
+
+				width: 100px;
+				height: 25px;
+			}
+
+			select{
+			    width: 175px;
+			    height: 25px;
+
+			}
+
+			.box {
+                width: 700px;
+                height: 110px
+			}
+
+		</style>
+</head>
+    <body>
+        <div>
+            <div id="imageID" style="display: inline-block"><img src="logosgrafico3.png" id="imageLive"></div>
+        </div>
+        <form>
+            <br>
+            <select id="selObject">
+                <option>Listempty</option>
+            </select>
+            <div id="tpsiV" class="box">
+                <div class="spacer">&nbsp;</div>
+                <input id="TpsIP" type="text" value="IP ADDRESS"/> <input type="button" id="btnCon" value="Connect" style="width: 90px"/> <input type="button" value="Disconnect" id="btnDis" style="width: 115px"/>
+                <select id="weldMode"><option>Mode Empty</option></select>
+                <div class="spacer">&nbsp;</div>
+                <div id="iodiv">
+                    <div style="display: inline-block">
+                        <div>
+                            <label>Welding start</label>
+                        </div>
+                        <div>
+                            <select id="Ioweld"><option>Empty</option> </select>
+                        </div>
+                    </div>
+
+                    <div style="display: inline-block">
+                        <div class="spacer">&nbsp;</div>
+                    </div>
+
+                    <div style="display: inline-block">
+                        <div>
+                            <label>Robot ready</label>
+                        </div>
+                        <div style="display: inline-block">
+                            <select id="IoReady"><option>Empty</option></select>
+                        </div>
+                        <div style="display: inline-block">
+                            <div class="spacer">&nbsp;</div>
+                        </div>
+                        <div style="display: inline-block">
+                            <input type="button" id="errorreset" value="Error Reset" style="width: 110px"/>
+                        </div>
+                    </div>
+                    <br>
+                </div>
+
+            </div>
+
+            <div>
+                <div style="display: inline-block; width: 300px" id="divlbl">
+                    <br>
+                    <label>Powersource </label><img src="circulo.png" id="imgPower">
+                    <br>
+                    <label>Status: </label><label id="lblstatus">disconnected</label>
+                    <br>
+                    <label>Welding mode: </label><label id="lblmode">Internal</label>
+                    <br>
+                </div>
+
+                <div style="display: inline-block; width: 150px">
+                    <img src="M-71128.png" id="machineWe">
+                </div>
+                
+            </div>
+            
+        </form>
+    </body>
+</html>
