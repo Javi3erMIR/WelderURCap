@@ -33,7 +33,7 @@ public class WeldOFFView implements SwingProgramNodeView<WeldOFFContribution>{
 		JLabel imag = new JLabel();
 		Box box = Box.createVerticalBox();
 		box.setAlignmentX(Component.CENTER_ALIGNMENT);
-		imag.setIcon(new ImageIcon(getClass().getResource("/impl/logosgrafico3.png")));
+		imag.setIcon(new ImageIcon(getClass().getResource("/impl/logo.png")));
 		//box.add(createspacer(logoLocate(280), 0));
 		box.add(imag);
 		return box;
