@@ -38,7 +38,7 @@ public class WeldONView implements SwingProgramNodeView<WeldONContribution>{
 	private Box logo(final ContributionProvider<WeldONContribution> provider) {
 		Box box = style.createSection(BoxLayout.PAGE_AXIS);
 		JLabel imge = new JLabel();
-		imge.setIcon(new ImageIcon(getClass().getResource("/impl/logosgrafico3.png")));
+		imge.setIcon(new ImageIcon(getClass().getResource("/impl/logo.png")));
 		Box infoSectcion = style.createSection(BoxLayout.LINE_AXIS);
 		infoSectcion.add(style.createInfo("Set and edit welding parameters"));
 		infoSectcion.add(createSpacer(150, 0));
