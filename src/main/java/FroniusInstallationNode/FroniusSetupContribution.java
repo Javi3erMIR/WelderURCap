@@ -1,30 +1,24 @@
 package FroniusInstallationNode;
 
-import java.awt.EventQueue;
-import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import javax.imageio.ImageIO;
-import javax.swing.JOptionPane;
-
 import CommunicationClasses.IOModbusState;
 import CommunicationClasses.ScriptCommand;
 import CommunicationClasses.ScriptSender;
 import com.ur.urcap.api.contribution.InstallationNodeContribution;
-import com.ur.urcap.api.contribution.installation.InstallationAPIProvider;
 import com.ur.urcap.api.domain.URCapAPI;
 import com.ur.urcap.api.domain.data.DataModel;
 import com.ur.urcap.api.domain.script.ScriptWriter;
-import com.ur.urcap.api.domain.userinteraction.keyboard.KeyboardInputCallback;
-import com.ur.urcap.api.domain.userinteraction.keyboard.KeyboardInputFactory;
-import com.ur.urcap.api.domain.userinteraction.keyboard.KeyboardTextInput;
 import com.ur.urcap.api.ui.annotation.Div;
 import com.ur.urcap.api.ui.annotation.Input;
 import com.ur.urcap.api.ui.annotation.Label;
 import com.ur.urcap.api.ui.annotation.Select;
 import com.ur.urcap.api.ui.component.*;
-import sun.jvm.hotspot.debugger.cdbg.basic.LazyBlockSym;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class FroniusSetupContribution implements InstallationNodeContribution{
 

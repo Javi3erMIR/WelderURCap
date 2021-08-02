@@ -1,7 +1,5 @@
 package CommunicationClasses;
 
-import jdk.vm.ci.meta.SpeculationLog;
-
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.Socket;
