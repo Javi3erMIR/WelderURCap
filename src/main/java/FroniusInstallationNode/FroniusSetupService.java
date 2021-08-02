@@ -23,7 +23,7 @@ public class FroniusSetupService implements InstallationNodeService {
 
 	@Override
 	public InputStream getHTML() {
-		return this.getClass().getResourceAsStream("/src/main/HTML/View.html");
+		return this.getClass().getResourceAsStream("/HTML/View.html");
 	}
 
 }
