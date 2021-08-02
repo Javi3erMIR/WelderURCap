@@ -2,3 +2,8 @@
 .mvn/*
 .settings/*
 target/*
+mvnw
+mvnw.cmd
+FroniusURCAp.iml
+.project
+.classpath
