@@ -35,8 +35,31 @@ import com.ur.urcap.api.domain.value.simple.Angle;
 import com.ur.urcap.api.domain.value.simple.Length;
 import com.ur.urcap.api.domain.value.simple.Speed;
 import styleClasses.TemplateType;
+import java.awt.*;
+import com.ur.urcap.api.domain.userinteraction.keyboard.KeyboardTextInput;
+import com.ur.urcap.api.domain.validation.ErrorHandler;
+import com.ur.urcap.api.domain.value.Pose;
+import com.ur.urcap.api.domain.value.PoseFactory;
+import com.ur.urcap.api.domain.value.ValueFactoryProvider;
+import com.ur.urcap.api.domain.value.expression.ExpressionBuilder;
+import com.ur.urcap.api.domain.value.expression.InvalidExpressionException;
+import com.ur.urcap.api.domain.value.jointposition.JointPosition;
+import com.ur.urcap.api.domain.value.jointposition.JointPositionFactory;
+import com.ur.urcap.api.domain.value.jointposition.JointPositions;
+import com.ur.urcap.api.domain.value.simple.Acceleration;
+import com.ur.urcap.api.domain.value.simple.Angle;
+import com.ur.urcap.api.domain.value.simple.Length;
+import com.ur.urcap.api.domain.value.simple.Speed;
+import com.ur.urcap.api.domain.variable.GlobalVariable;
+import com.ur.urcap.api.domain.variable.Variable;
+import com.ur.urcap.api.domain.variable.VariableException;
+import com.ur.urcap.api.domain.variable.VariableFactory;
+import org.graalvm.compiler.nodes.calc.AddNode;
+import styleClasses.TemplateType;
+import com.ur.urcap.api.contribution.program.CreationContext.NodeCreationType;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -165,9 +188,9 @@ public class TrackingContribution implements ProgramNodeContribution {
         apiProvider.getProgramAPI().getUndoRedoManager().recordChanges(new UndoableChanges() {
             @Override
             public void executeChanges() {
-                setModel(TemplateType.ARCON.getName());
-                createSubtree(TemplateType.ARCON);
-                //view.update(TrackingContribution.this);
+            setModel(TemplateType.ARCON.getName());
+            createSubtree(TemplateType.ARCON);
+            //view.update(TrackingContribution.this);
             }
         });
     }
@@ -176,9 +199,9 @@ public class TrackingContribution implements ProgramNodeContribution {
         apiProvider.getProgramAPI().getUndoRedoManager().recordChanges(new UndoableChanges() {
             @Override
             public void executeChanges() {
-                setModel(TemplateType.ARCOFF.getName());
-                createSubtree(TemplateType.ARCOFF);
-                //view.update(TrackingContribution.this);
+            setModel(TemplateType.ARCOFF.getName());
+            createSubtree(TemplateType.ARCOFF);
+            //view.update(TrackingContribution.this);
             }
         });
     }
@@ -188,10 +211,10 @@ public class TrackingContribution implements ProgramNodeContribution {
         apiProvider.getProgramAPI().getUndoRedoManager().recordChanges(new UndoableChanges() {
             @Override
             public void executeChanges() {
-                setModel(TemplateType.EMPTY.getName());
-                clearSubtree();
-                //view.update(TrackingContribution.this);
-                counter = 0;
+            setModel(TemplateType.EMPTY.getName());
+            clearSubtree();
+            //view.update(TrackingContribution.this);
+            counter = 0;
             }
         });
     }
@@ -277,22 +300,22 @@ public class TrackingContribution implements ProgramNodeContribution {
         undoRedoManager.recordChanges(new UndoableChanges() {
             @Override
             public void executeChanges() {
-                try {
-                    MoveNode targetMoveL = nf.createMoveNodeNoTemplate();
-                    Speed speed = valueFactoryProvider.getSimpleValueFactory().createSpeed(Double.parseDouble(getSpeed()), Speed.Unit.MM_S);
-                    targetMoveL.setConfig(targetMoveL.getConfigBuilders().createMoveLConfigBuilder().setToolSpeed(speed, ErrorHandler.AUTO_CORRECT).build());
-                    WaypointNode targetWaypoint = nf.createWaypointNode();
-                    BlendParameters targetWaypointDefaultBlends = targetWaypoint.getConfigFactory().createNoBlendParameters();
-                    WaypointMotionParameters targetMotionParams = targetWaypoint.getConfigFactory().createSharedMotionParameters();
-                    WaypointNodeConfig targetConfig = targetWaypoint.getConfigFactory().createFixedPositionConfig(pose, jointPositions, targetWaypointDefaultBlends, targetMotionParams);
-                    targetWaypoint.setConfig(targetConfig);
-                    TreeNode moveTreeNode = root.addChild(targetMoveL);
-                    moveTreeNode.addChild(targetWaypoint);
-                } catch (TreeStructureException e) {
-                    e.printStackTrace();
-                } catch (NullPointerException e) {
-                    e.printStackTrace();
-                }
+            try {
+                MoveNode targetMoveL = nf.createMoveNodeNoTemplate();
+                Speed speed = valueFactoryProvider.getSimpleValueFactory().createSpeed(Double.parseDouble(getSpeed()), Speed.Unit.MM_S);
+                targetMoveL.setConfig(targetMoveL.getConfigBuilders().createMoveLConfigBuilder().setToolSpeed(speed, ErrorHandler.AUTO_CORRECT).build());
+                WaypointNode targetWaypoint = nf.createWaypointNode();
+                BlendParameters targetWaypointDefaultBlends = targetWaypoint.getConfigFactory().createNoBlendParameters();
+                WaypointMotionParameters targetMotionParams = targetWaypoint.getConfigFactory().createSharedMotionParameters();
+                WaypointNodeConfig targetConfig = targetWaypoint.getConfigFactory().createFixedPositionConfig(pose, jointPositions, targetWaypointDefaultBlends, targetMotionParams);
+                targetWaypoint.setConfig(targetConfig);
+                TreeNode moveTreeNode = root.addChild(targetMoveL);
+                moveTreeNode.addChild(targetWaypoint);
+            } catch (TreeStructureException e) {
+                e.printStackTrace();
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
             }
         });
 

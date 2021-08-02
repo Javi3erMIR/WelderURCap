@@ -339,7 +339,6 @@ public class FroniusSetupContribution implements InstallationNodeContribution{
 	//Thread flag to call custom dialog in case of disconnection
 	private void dialogThread(final boolean cycle) {
 		new Thread(new Runnable() {
-			
 			@Override
 			public void run() {
 				while(cycle) {

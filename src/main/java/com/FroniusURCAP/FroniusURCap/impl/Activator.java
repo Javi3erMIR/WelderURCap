@@ -17,6 +17,7 @@ public class Activator implements BundleActivator {
 	@Override
 	public void start(BundleContext bundleContext) throws Exception {
 		System.out.println("Activator says Hello World!");
+		//bundleContext.registerService(SwingInstallationNodeService.class,new FroniusSetupService(), null);
 		bundleContext.registerService(InstallationNodeService.class,new FroniusSetupService(), null);
 		bundleContext.registerService(SwingProgramNodeService.class, new WeldOFFService(), null);
 		bundleContext.registerService(SwingProgramNodeService.class,new WeldONService(), null);
