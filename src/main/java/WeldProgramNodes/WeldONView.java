@@ -3,9 +3,7 @@ package WeldProgramNodes;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 import javax.swing.*;
-
 import com.ur.urcap.api.contribution.ContributionProvider;
 import com.ur.urcap.api.contribution.ViewAPIProvider;
 import com.ur.urcap.api.contribution.program.swing.SwingProgramNodeView;
@@ -41,7 +39,7 @@ public class WeldONView implements SwingProgramNodeView<WeldONContribution>{
 		imge.setIcon(new ImageIcon(getClass().getResource("/impl/logosgrafico3.png")));
 		Box infoSectcion = style.createSection(BoxLayout.LINE_AXIS);
 		infoSectcion.add(style.createInfo("Set and edit welding parameters"));
-		infoSectcion.add(createSpacer(150, 0));
+		infoSectcion.add(createSpacer(60, 0));
 		infoSectcion.add(imge);
 		box.add(infoSectcion);
 		box.add(style.createVerticalSpacing());
