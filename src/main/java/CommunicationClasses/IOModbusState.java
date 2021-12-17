@@ -2,45 +2,46 @@ package CommunicationClasses;
 
 //Support library for connection status
 import EasyModbus.ModbusClient;
-
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Timer;
-import java.util.TimerTask;
-
 /*Class for check connection status*/
 
 public class IOModbusState extends Thread {
 
-	private int value = 0, flag = 0;
+	private int value, flag;
 	private boolean bool = true;
 	private boolean[] inputs;
 	private String IP;
 	public ModbusClient client;
 
+	public IOModbusState(String IP){
+		value = 0;
+		flag = 0;
+		bool = true;
+		this.IP = IP;
+		client = new ModbusClient(this.IP, 502);
+	}
+
 	@Override
 	public void run() {
-		client = new ModbusClient(IP, 502);
 		try {
 			client.Connect();
+			Thread.sleep(50);
 			if (client.isConnected()) {
+				Thread.sleep(100);
 				client.WriteSingleCoil(1, true);
 				while (bool) {
-					try {
-						inputs = client.ReadDiscreteInputs(1, 1);
-						if (inputs[0]) {
-							value = 1;
-						} else if (!inputs[0]) {
-							flag++;
-							value = 0;
-							client.WriteSingleCoil(1, false);
-							client.Disconnect();
-							deadThread();
-						}
-					} catch (Exception e) {
-
+					inputs = client.ReadDiscreteInputs(1, 1);
+					if (inputs[0]) {
+						value = 1;
+					} 
+					else if (!inputs[0]) {
+						flag++;
+						value = 0;
+						client.WriteSingleCoil(1, false);
+						client.Disconnect();
+						killThread();
 					}
-					Thread.sleep(250);
+					Thread.sleep(100);
 				}
 			}
 		} catch (Exception e) {
@@ -245,18 +246,14 @@ public class IOModbusState extends Thread {
 		return this.value;
 	}
 		
-	public void deadThread() {
+	public void killThread() {
 		this.bool = false;
 	}
 	
 	public void setValue(int val) {
 		value = val;
 	}
-	
-	public void setIP(String ip) {
-		this.IP = ip;
-	}
-	
+
 	public int getFlag() {
 		return this.flag;
 	}

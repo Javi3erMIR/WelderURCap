@@ -12,7 +12,6 @@ import com.ur.urcap.api.ui.annotation.Input;
 import com.ur.urcap.api.ui.annotation.Label;
 import com.ur.urcap.api.ui.annotation.Select;
 import com.ur.urcap.api.ui.component.*;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -37,7 +36,6 @@ public class FroniusSetupContribution implements InstallationNodeContribution{
 		this.apiProvider = apiProvider;
 		this.model = model;
 		this.sender = new ScriptSender();
-		this.iomod = new IOModbusState();
 	}
 
 	@Div(id = "iodiv")
@@ -300,8 +298,7 @@ public class FroniusSetupContribution implements InstallationNodeContribution{
 
 	public void directiveCon() {
 		lblsta.setText("Connecting...");
-		iomod = new IOModbusState();
-		iomod.setIP(getinput());
+		iomod = new IOModbusState(getinput());
 		try {
 			addSignals();
 			Thread.sleep(100);
@@ -315,10 +312,9 @@ public class FroniusSetupContribution implements InstallationNodeContribution{
 	public void directiveDis() {
 		turnoffSignals();
 		try {
-			iomod.deadThread();
-			Thread.sleep(1000);
+			iomod.killThread();
+			Thread.sleep(250);
 			iomod.setValue(0);
-			iomod.deadThread();
 			deleteSignals();
 		} catch (Exception e) {}
 		changedTpsIVDis();
@@ -343,7 +339,7 @@ public class FroniusSetupContribution implements InstallationNodeContribution{
 			public void run() {
 				while(cycle) {
 					try {
-						Thread.sleep(250);					
+						Thread.sleep(100);					
 						if(iomod.getFlag() == 1) {
 							flag++;
 							if(flag == 1) {
