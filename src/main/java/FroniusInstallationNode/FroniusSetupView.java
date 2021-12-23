@@ -40,7 +40,25 @@ public class FroniusSetupView implements SwingInstallationNodeView<Contribution>
         this.style = style;
         robot_ready = new JCheckBox();
         error_reset = new JCheckBox();
-    }      
+    }  
+    
+    public void isConnected(){
+        model_dropmenu.setEnabled(false);
+        ip_input.setEnabled(false);
+        ip_input.setEditable(false);
+        connect_btn.setEnabled(false);
+        disconnect_btn.setEnabled(true);
+        mode_drop_menu.setEnabled(true);
+    }
+
+    public void isDisconnected(){
+        model_dropmenu.setEnabled(true);
+        ip_input.setEnabled(true);
+        ip_input.setEditable(true);
+        connect_btn.setEnabled(true);
+        disconnect_btn.setEnabled(false);
+        mode_drop_menu.setEnabled(false);
+    }
 
     private Box controlSectionModel1(final Contribution contribution){
         Box control_section = style.createSection(BoxLayout.LINE_AXIS);
@@ -57,14 +75,16 @@ public class FroniusSetupView implements SwingInstallationNodeView<Contribution>
         connect_btn.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                //do something
+                contribution.connectFunction();
+                isConnected();
             }
         });
         disconnect_btn = style.createButton("Disconnect", 125, 25);
         disconnect_btn.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent arg0) {
-               //do something
+                contribution.disconnectFunction();
+                isDisconnected();
             }
         });        
         String[] items = {"Internal parameters", "Job mode", "Teach mode"};
@@ -74,17 +94,18 @@ public class FroniusSetupView implements SwingInstallationNodeView<Contribution>
             public void itemStateChanged(ItemEvent arg0) {
                 if(arg0.getStateChange() == ItemEvent.SELECTED){
                     if(mode_drop_menu.getSelectedItem().equals("Internal parameters")){
-                        //do something
+                        contribution.setMode(mode_drop_menu.getSelectedItem().toString());
                     }    
                     if(mode_drop_menu.getSelectedItem().equals("Job mode")){
-                        //do something
+                        contribution.setMode(mode_drop_menu.getSelectedItem().toString());
                     }                    
                     else if(mode_drop_menu.getSelectedItem().equals("Teach mode")){
-                        //do something
+                        contribution.setMode(mode_drop_menu.getSelectedItem().toString());
                     }
                 }
             }
         });
+        isDisconnected();
         control_section.add(ip_input);
         control_section.add(style.spaceComponent(10, 0));
         control_section.add(connect_btn);
@@ -99,11 +120,12 @@ public class FroniusSetupView implements SwingInstallationNodeView<Contribution>
         Box page_section = style.createSection(BoxLayout.PAGE_AXIS);
         JLabel[] main_labels = {new JLabel("Powersource:"), new JLabel("Status:"), new JLabel("Welding mode:")}; 
         JLabel[] dynamic_labels = {indicator_led_label = new JLabel(), 
-                                   connection_indicator = new JLabel("Disconnect"), 
+                                   connection_indicator = new JLabel("Disconnected"), 
                                    mode_indicator = new JLabel("Internal Parameters")};              
         indicator_led_label.setIcon(new ImageIcon(getClass().getResource("/impl/circulo.png")));
+        indicator_led_label.setVisible(false);
         for(int i = 0; i < 3; i++){
-            page_section.add(style.spaceComponent(0, 10));
+            page_section.add(style.spaceComponent(0, 20));
             page_section.add(boxLineLabelSection(contribution, main_labels[i], dynamic_labels[i]));    
         }       
         return page_section;
@@ -258,16 +280,27 @@ public class FroniusSetupView implements SwingInstallationNodeView<Contribution>
         model_dropmenu.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                if(model_dropmenu.getSelectedItem().equals("Select machine model...")){
-                    panel_main.removeAll();
-                }
-                if(model_dropmenu.getSelectedItem().equals("TPS 320i")){
-                    panel_main.removeAll();
-                    panel_main.add(layoutSection1(contribution));
-                }
-                if(model_dropmenu.getSelectedItem().equals("TPS MagicWave")){
-                    panel_main.removeAll();
-                    panel_main.add(layoutSection2(contribution));
+                String[] btns = {"Yes", "Cancel"};
+		        int op = JOptionPane.showOptionDialog(null, 
+                                                      "Do you want to change of machine?\n This will be disconnect or disable the other machine.", 
+                                                      "Warning!", 
+                                                      0, 
+                                                      JOptionPane.INFORMATION_MESSAGE, 
+                                                      null, 
+                                                      btns, 
+                                                      "");
+                if(op == 0){
+                    if(model_dropmenu.getSelectedItem().equals("Select machine model...")){
+                        panel_main.removeAll();
+                    }
+                    if(model_dropmenu.getSelectedItem().equals("TPS 320i")){
+                        panel_main.removeAll();
+                        panel_main.add(layoutSection1(contribution));
+                    }
+                    if(model_dropmenu.getSelectedItem().equals("TPS MagicWave")){
+                        panel_main.removeAll();
+                        panel_main.add(layoutSection2(contribution));
+                    }
                 }
             }
         });          

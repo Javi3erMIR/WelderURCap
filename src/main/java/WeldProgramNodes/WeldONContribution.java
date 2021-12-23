@@ -95,7 +95,7 @@ public class WeldONContribution implements ProgramNodeContribution{
 
 	@Override
 	public void generateScript(ScriptWriter writer) {
-		if(getInstallation().getMode().equals("TPS 320i")) {
+		if(getInstallation().setModel().equals("TPS 320i")) {
 			if(getInstallation().getMode().equals("Job mode")){
 				Integer[] binumJob = getintbin(JOB_INPUT_KEY);
 				for(int i = 0; i < 10; i++){
@@ -148,7 +148,7 @@ public class WeldONContribution implements ProgramNodeContribution{
 			writer.appendLine("modbus_set_output_signal(\"robotON\", True, False)");
 			writer.appendLine("sleep(1)");
 		}
-		if(getInstallation().getMode().equals("TPS MagicWave")) {
+		if(getInstallation().setModel().equals("TPS MagicWave")) {
 			if(getInstallation().getMode().equals("Job mode")){
 				Integer[] binum = getintbin(JOB_INPUT_KEY);
 				for(int i = 0; i < 8; i++){
@@ -213,7 +213,7 @@ public class WeldONContribution implements ProgramNodeContribution{
 		view.setTextField(view.arcLentf, model.get(ARC_INPUT_KEY, DEFAULT_VALUE));
 		view.setTextField(view.pulseDynamictf, model.get(PULSE_INPUT_KEY, DEFAULT_VALUE));
 		view.setTextField(view.wireRetracttf, model.get(RETRACT_INPUT_KEY, DEFAULT_VALUE));
-		if(getInstallation().getMode().equals("TPS 320i")){
+		if(getInstallation().setModel().equals("TPS 320i")){
 			if(getInstallation().getMode().equals("Job mode")){
 				view.jobNumtf.setEnabled(true);
 				view.wireFeedtf.setEnabled(false);
@@ -227,7 +227,7 @@ public class WeldONContribution implements ProgramNodeContribution{
 				view.pulseDynamictf.setEnabled(true);
 				view.wireRetracttf.setEnabled(true);
 			}
-		}else if(getInstallation().getMode().equals("TPS MagicWave")){
+		}else if(getInstallation().setModel().equals("TPS MagicWave")){
 			if(getInstallation().getMode().equals("Job mode")){
 				view.jobNumtf.setEnabled(true);
 				view.wireFeedtf.setEnabled(false);

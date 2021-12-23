@@ -1,6 +1,6 @@
 package WeldProgramNodes;
 
-import FroniusInstallationNode.FroniusSetupContribution;
+import FroniusInstallationNode.Contribution;
 import com.ur.urcap.api.contribution.ProgramNodeContribution;
 import com.ur.urcap.api.contribution.program.ProgramAPIProvider;
 import com.ur.urcap.api.domain.ProgramAPI;
@@ -42,8 +42,8 @@ public class WeldOFFContribution implements ProgramNodeContribution{
 		return true;
 	}
 	
-	private FroniusSetupContribution getInstallation() {
-		return apiProvider.getInstallationNode(FroniusSetupContribution.class);
+	private Contribution getInstallation() {
+		return apiProvider.getInstallationNode(Contribution.class);
 	}
 
 	@Override
