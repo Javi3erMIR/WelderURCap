@@ -4,44 +4,44 @@ package CommunicationClasses;
 import EasyModbus.ModbusClient;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /*Class for check connection status*/
 
 public class IOModbusState extends Thread {
 
-	private int value = 0, flag = 0;
-	private boolean bool = true;
+	private int value, flag;
+	private boolean bool;
 	private boolean[] inputs;
 	private String IP;
 	public ModbusClient client;
 
-	@Override
-	public void run() {
+	public IOModbusState(String IP){
+		value = 0;
+		flag = 0;
+		bool = true;
 		client = new ModbusClient(IP, 502);
+	}
+
+	@Override
+	public void run() {		
 		try {
 			client.Connect();
+			Thread.sleep(100);
 			if (client.isConnected()) {
-				client.WriteSingleCoil(1, true);
 				while (bool) {
-					try {
-						inputs = client.ReadDiscreteInputs(1, 1);
-						if (inputs[0]) {
-							value = 1;
-						} else if (!inputs[0]) {
-							flag++;
-							value = 0;
-							client.WriteSingleCoil(1, false);
-							client.Disconnect();
-							deadThread();
-						}
-					} catch (Exception e) {
-
-					}
+					inputs = client.ReadDiscreteInputs(1, 1);
 					Thread.sleep(250);
+					if (inputs[0]) {
+						value = 1;
+					} else if (!inputs[0]) {
+						flag++;
+						value = 0;
+						client.WriteSingleCoil(1, false);
+						client.Disconnect();
+						deadThread();
+					}					
 				}
+				client.Disconnect();
 			}
 		} catch (Exception e) {
 			flag++;

@@ -1,7 +1,6 @@
 package WeldProgramNodes;
 
 import java.util.Locale;
-
 import com.ur.urcap.api.contribution.ViewAPIProvider;
 import com.ur.urcap.api.contribution.program.ContributionConfiguration;
 import com.ur.urcap.api.contribution.program.CreationContext;
