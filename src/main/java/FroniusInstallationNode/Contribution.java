@@ -183,7 +183,7 @@ public class Contribution implements InstallationNodeContribution{
         delay(250);
         deleteSignals();
         delay(250);
-        iomod.deadThread();
+        iomod.killThread();
         iomod.setValue(0);
         delay(250);
     }
