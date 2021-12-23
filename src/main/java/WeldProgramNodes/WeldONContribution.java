@@ -2,7 +2,6 @@ package WeldProgramNodes;
 
 import EasyModbus.ModbusClient;
 import FroniusInstallationNode.Contribution;
-import FroniusInstallationNode.FroniusSetupContribution;
 import com.ur.urcap.api.contribution.ProgramNodeContribution;
 import com.ur.urcap.api.contribution.program.CreationContext;
 import com.ur.urcap.api.contribution.program.ProgramAPIProvider;

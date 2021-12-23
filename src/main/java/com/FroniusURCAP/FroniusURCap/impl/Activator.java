@@ -3,7 +3,6 @@ package com.FroniusURCAP.FroniusURCap.impl;
 import WeldProgramNodes.WeldOFFService;
 import WeldProgramNodes.WeldONService;
 import FroniusInstallationNode.FroniusInsService;
-import FroniusInstallationNode.FroniusSetupService;
 import TrackingNodes.TrackingService;
 import com.ur.urcap.api.contribution.InstallationNodeService;
 import com.ur.urcap.api.contribution.installation.swing.SwingInstallationNodeService;
