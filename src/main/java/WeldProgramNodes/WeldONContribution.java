@@ -1,6 +1,7 @@
 package WeldProgramNodes;
 
 import EasyModbus.ModbusClient;
+import FroniusInstallationNode.Contribution;
 import FroniusInstallationNode.FroniusSetupContribution;
 import com.ur.urcap.api.contribution.ProgramNodeContribution;
 import com.ur.urcap.api.contribution.program.CreationContext;
@@ -13,11 +14,9 @@ import com.ur.urcap.api.domain.undoredo.UndoableChanges;
 import com.ur.urcap.api.domain.userinteraction.keyboard.KeyboardInputCallback;
 import com.ur.urcap.api.domain.userinteraction.keyboard.KeyboardInputFactory;
 import com.ur.urcap.api.domain.userinteraction.keyboard.KeyboardNumberInput;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.Timer;
-import java.io.IOException;
 import java.util.TimerTask;
 
 public class WeldONContribution implements ProgramNodeContribution{
@@ -86,9 +85,9 @@ public class WeldONContribution implements ProgramNodeContribution{
 		return true;
 	}
 	
-	private FroniusSetupContribution getInstallation() {
+	private Contribution getInstallation() {
 		try {
-			return apiProvider.getInstallationNode(FroniusSetupContribution.class);
+			return apiProvider.getInstallationNode(Contribution.class);
 		}catch (NullPointerException e){
 			return null;
 		}
@@ -96,7 +95,7 @@ public class WeldONContribution implements ProgramNodeContribution{
 
 	@Override
 	public void generateScript(ScriptWriter writer) {
-		if(getInstallation().setModel().equals("TPS 320i")) {
+		if(getInstallation().getMode().equals("TPS 320i")) {
 			if(getInstallation().getMode().equals("Job mode")){
 				Integer[] binumJob = getintbin(JOB_INPUT_KEY);
 				for(int i = 0; i < 10; i++){
@@ -149,8 +148,8 @@ public class WeldONContribution implements ProgramNodeContribution{
 			writer.appendLine("modbus_set_output_signal(\"robotON\", True, False)");
 			writer.appendLine("sleep(1)");
 		}
-		if(getInstallation().setModel().equals("TPS MagicWave 2200")) {
-			if(getInstallation().setModel().equals("Job mode")){
+		if(getInstallation().getMode().equals("TPS MagicWave")) {
+			if(getInstallation().getMode().equals("Job mode")){
 				Integer[] binum = getintbin(JOB_INPUT_KEY);
 				for(int i = 0; i < 8; i++){
 					if(binum[i] == 1) {
@@ -214,7 +213,7 @@ public class WeldONContribution implements ProgramNodeContribution{
 		view.setTextField(view.arcLentf, model.get(ARC_INPUT_KEY, DEFAULT_VALUE));
 		view.setTextField(view.pulseDynamictf, model.get(PULSE_INPUT_KEY, DEFAULT_VALUE));
 		view.setTextField(view.wireRetracttf, model.get(RETRACT_INPUT_KEY, DEFAULT_VALUE));
-		if(getInstallation().setModel().equals("TPS 320i")){
+		if(getInstallation().getMode().equals("TPS 320i")){
 			if(getInstallation().getMode().equals("Job mode")){
 				view.jobNumtf.setEnabled(true);
 				view.wireFeedtf.setEnabled(false);
@@ -228,7 +227,7 @@ public class WeldONContribution implements ProgramNodeContribution{
 				view.pulseDynamictf.setEnabled(true);
 				view.wireRetracttf.setEnabled(true);
 			}
-		}else if(getInstallation().setModel().equals("TPS MagicWave 2200")){
+		}else if(getInstallation().getMode().equals("TPS MagicWave")){
 			if(getInstallation().getMode().equals("Job mode")){
 				view.jobNumtf.setEnabled(true);
 				view.wireFeedtf.setEnabled(false);
