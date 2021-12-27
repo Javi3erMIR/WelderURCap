@@ -9,6 +9,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import com.ur.urcap.api.contribution.installation.swing.SwingInstallationNodeView;
 import com.ur.urcap.api.domain.userinteraction.keyboard.KeyboardTextInput;
+
+import styleClasses.ShowDialog;
 import styleClasses.Style;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,7 +41,7 @@ public class FroniusSetupView implements SwingInstallationNodeView<Contribution>
     public FroniusSetupView(Style style){
         this.style = style;
         robot_ready = new JCheckBox();
-        error_reset = new JCheckBox();
+        error_reset = new JCheckBox();       
     }  
     
     public void isConnected(){
@@ -74,9 +76,9 @@ public class FroniusSetupView implements SwingInstallationNodeView<Contribution>
         connect_btn = style.createButton("Connect", 110, 25);
         connect_btn.addActionListener(new ActionListener(){
             @Override
-            public void actionPerformed(ActionEvent arg0) {
+            public void actionPerformed(ActionEvent arg0) {                
+                isConnected();                
                 contribution.connectFunction();
-                isConnected();
             }
         });
         disconnect_btn = style.createButton("Disconnect", 125, 25);
@@ -301,6 +303,9 @@ public class FroniusSetupView implements SwingInstallationNodeView<Contribution>
                         panel_main.removeAll();
                         panel_main.add(layoutSection2(contribution));
                     }
+                }
+                if(op == 1){
+                    model_dropmenu.setSelectedItem(contribution.setModel());
                 }
             }
         });          

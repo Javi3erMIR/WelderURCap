@@ -1,17 +1,26 @@
 package CommunicationClasses;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.rmi.server.ExportException;
+
+import javax.swing.JOptionPane;
+
 //Support library for connection status
 import EasyModbus.ModbusClient;
-import java.io.IOException;
 /*Class for check connection status*/
+import styleClasses.ShowDialog;
 
-public class IOModbusState extends Thread {
+public class IOModbusState implements Runnable {
 
 	private int value, flag;
 	private boolean bool;
 	private boolean[] inputs;
 	private String IP;
 	public ModbusClient client;
+	private ScriptCommand command;
+	private ScriptSender sender;
+	private ShowDialog dialog;
 
 	public IOModbusState(String IP){
 		value = 0;
@@ -19,39 +28,8 @@ public class IOModbusState extends Thread {
 		bool = true;
 		this.IP = IP;
 		client = new ModbusClient(this.IP, 502);
-	}
-
-	@Override
-	public void run() {
-		try {
-			client.Connect();
-			Thread.sleep(100);
-			if (client.isConnected()) {				
-				while (bool) {
-					inputs = client.ReadDiscreteInputs(1, 1);
-					Thread.sleep(250);
-					if (inputs[0]) {
-						value = 1;
-					} 
-					else if (!inputs[0]) {
-						flag++;
-						value = 0;
-						client.WriteSingleCoil(1, false);
-						client.Disconnect();
-						killThread();
-					}
-				}
-				client.Disconnect();
-			}
-		} catch (Exception e) {
-			flag++;
-			value = 0;
-			try {
-				client.Disconnect();
-			} catch (IOException ioException) {
-				ioException.printStackTrace();
-			}
-		}
+		command = new ScriptCommand("ClassSpecial");
+		sender = new ScriptSender();		
 	}
 
 	//Welding mode methods-----------------------------------------------------------------------------------------------------------------------------------------------
@@ -259,5 +237,39 @@ public class IOModbusState extends Thread {
 	
 	public void setFlag(int fla) {
 		this.flag = fla;
+	}
+
+	public void startLoop(){
+		this.bool = true;
+	}
+
+	@Override
+	public void run() {
+		try {
+			//client.Disconnect();
+			client.Connect();
+			if (client.isConnected()) {				
+				while (bool) {
+					inputs = client.ReadDiscreteInputs(1, 1);
+					Thread.sleep(250);
+					if (inputs[0]) 
+						value = 1;					
+					else if (!inputs[0]) {
+						flag++;
+						value = 0;
+						client.WriteSingleCoil(1, false);
+						client.Disconnect();
+						killThread();
+					}
+				}
+				client.Disconnect();
+			}
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch(Exception e){
+			e.printStackTrace();
+		}		
 	}
 }

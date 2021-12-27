@@ -3,6 +3,8 @@ package FroniusInstallationNode;
 import java.awt.EventQueue;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import com.ur.urcap.api.contribution.InstallationNodeContribution;
 import com.ur.urcap.api.contribution.installation.CreationContext;
@@ -16,6 +18,7 @@ import com.ur.urcap.api.domain.userinteraction.keyboard.KeyboardTextInput;
 import CommunicationClasses.IOModbusState;
 import CommunicationClasses.ScriptCommand;
 import CommunicationClasses.ScriptSender;
+import styleClasses.ShowDialog;
 
 public class Contribution implements InstallationNodeContribution{
     
@@ -32,6 +35,10 @@ public class Contribution implements InstallationNodeContribution{
 	private Timer uiTimer;
 	public IOModbusState iomod;
 	private int flag = 0;
+    public CheckKey license;
+    public static String PRODUCT_KEY;
+    private String serial_num;
+    private ShowDialog option_dialog;
     
     public Contribution(InstallationAPIProvider apiProvider, FroniusSetupView view, DataModel model, CreationContext context){
         this.apiProvider = apiProvider.getInstallationAPI();
@@ -41,6 +48,8 @@ public class Contribution implements InstallationNodeContribution{
                                           .getUserInteraction()
                                           .getKeyboardInputFactory();
         sender = new ScriptSender();
+        serial_num = apiProvider.getSystemAPI().getRobotModel().getSerialNumber();
+        option_dialog = new ShowDialog("Option", "Are you sure to connect?");
     }
 
     public KeyboardTextInput getKeyboardTextInput(){
@@ -168,13 +177,17 @@ public class Contribution implements InstallationNodeContribution{
         } catch (Exception e) {}
     }
 
-    public void connectFunction() { 
-        iomod = new IOModbusState(getDataModel());
-        iomod.start();       
-		view.connection_indicator.setText("Connecting...");		
-		addSignals();
+    public void connectFunction() {
+        iomod = new IOModbusState(getDataModel()); 
+        view.connection_indicator.setText("Connecting...");	
+        addSignals();
         delay(250);
         robotReady();
+        option_dialog.showCustomDialog();
+        if(ShowDialog.btn_option == 0) 
+            iomod.run();           
+        else
+            disconnectFunction();
 	}
     
     public void disconnectFunction(){
@@ -285,8 +298,13 @@ public class Contribution implements InstallationNodeContribution{
 		sender.sendScriptCommand(writer);
 	}
 
+    public void licenseKeyDialog(){
+        PRODUCT_KEY = JOptionPane.showInputDialog("Product key for " + serial_num);
+    }
+
     @Override
     public void openView() {
+        
         setModel();
         uiTimer = new Timer(true);
         uiTimer.schedule(new TimerTask() {
