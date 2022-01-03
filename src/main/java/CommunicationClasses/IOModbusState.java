@@ -2,7 +2,6 @@ package CommunicationClasses;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.rmi.server.ExportException;
 
 import javax.swing.JOptionPane;
 
@@ -11,7 +10,7 @@ import EasyModbus.ModbusClient;
 /*Class for check connection status*/
 import styleClasses.ShowDialog;
 
-public class IOModbusState implements Runnable {
+public class IOModbusState extends Thread {
 
 	private int value, flag;
 	private boolean bool;
@@ -30,6 +29,40 @@ public class IOModbusState implements Runnable {
 		client = new ModbusClient(this.IP, 502);
 		command = new ScriptCommand("ClassSpecial");
 		sender = new ScriptSender();		
+	}
+
+	@Override
+	public void run() {
+		try {
+			//client.Disconnect();
+			Thread.sleep(100);
+			client.Connect();
+			if (client.isConnected()) {				
+				while (bool) {
+					inputs = client.ReadDiscreteInputs(1, 1);
+					Thread.sleep(250);
+					if (inputs[0]) 
+						value = 1;					
+					else if (!inputs[0]) {
+						killThread();
+						flag++;
+						value = 0;
+						client.WriteSingleCoil(1, false);
+						client.Disconnect();					
+					}
+				}
+				client.Disconnect();
+			}
+		} catch (UnknownHostException e) {
+			command.appendLine("popup(\""+e.getMessage()+"\")");
+			sender.sendScriptCommand(command);
+		} catch (IOException e) {
+			command.appendLine("popup(\""+e.getMessage()+"\")");
+			sender.sendScriptCommand(command);
+		} catch(Exception e){
+			command.appendLine("popup(\""+e.getMessage()+"\")");
+			sender.sendScriptCommand(command);
+		}		
 	}
 
 	//Welding mode methods-----------------------------------------------------------------------------------------------------------------------------------------------
@@ -88,7 +121,7 @@ public class IOModbusState implements Runnable {
 	}
 
 	public boolean[] getTeachModeValue() {
-		boolean[] values = {};
+		boolean[] values = new boolean[1];
 		try {
 			if (client.isConnected())
 				values = client.ReadCoils(25, 1);
@@ -241,35 +274,5 @@ public class IOModbusState implements Runnable {
 
 	public void startLoop(){
 		this.bool = true;
-	}
-
-	@Override
-	public void run() {
-		try {
-			//client.Disconnect();
-			client.Connect();
-			if (client.isConnected()) {				
-				while (bool) {
-					inputs = client.ReadDiscreteInputs(1, 1);
-					Thread.sleep(250);
-					if (inputs[0]) 
-						value = 1;					
-					else if (!inputs[0]) {
-						flag++;
-						value = 0;
-						client.WriteSingleCoil(1, false);
-						client.Disconnect();
-						killThread();
-					}
-				}
-				client.Disconnect();
-			}
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch(Exception e){
-			e.printStackTrace();
-		}		
-	}
+	}	
 }

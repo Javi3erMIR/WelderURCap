@@ -33,15 +33,13 @@ public class WeldONContribution implements ProgramNodeContribution{
 	private static final String DEFAULT_VALUE = "0";
 	private Double inputText = 0.0;
 	private Timer uiTimer;
-	private ModbusClient client;
 	
 	public WeldONContribution(ProgramAPIProvider apiProvider, WeldONView view, DataModel model, CreationContext context){
 		this.apiProvider = apiProvider.getProgramAPI();
 		this.view = view;
 		this.model = model;
 		undoRedoManager = apiProvider.getProgramAPI().getUndoRedoManager();
-		keyboardInputFactory = apiProvider.getUserInterfaceAPI().getUserInteraction().getKeyboardInputFactory();
-		client = getInstallation().iomod.client;
+		keyboardInputFactory = apiProvider.getUserInterfaceAPI().getUserInteraction().getKeyboardInputFactory();	
 	}
 
 	@Override
@@ -71,17 +69,21 @@ public class WeldONContribution implements ProgramNodeContribution{
 	@Override
 	public String getTitle() {
 		String title = "mode";
-		if(getInstallation().getMode().equals("Job mode")){
-			title = "Arc ON: job " + model.get(JOB_INPUT_KEY, DEFAULT_VALUE);
-		}else{
-			title = "Arc ON";
-		}
+		try {
+			if(getInstallation().getMode().equals("Job mode")){
+				title = "Arc ON: job " + model.get(JOB_INPUT_KEY, DEFAULT_VALUE);
+			}else{
+				title = "Arc ON";
+			}
+		} catch (NullPointerException e) {
+			return title;
+		}		
 		return title;
 	}
 
 	@Override
 	public boolean isDefined() {
-		return true;
+		return getInstallation().licenseKeyDialog();
 	}
 	
 	private Contribution getInstallation() {
@@ -281,13 +283,15 @@ public class WeldONContribution implements ProgramNodeContribution{
 	}
 
 	public void updateUI(){
-		int voltageInt = getInstallation().iomod.getVoltage();
-		double voltage = voltageInt;
-		int currentInt = getInstallation().iomod.getCurrent();
-		double current = currentInt;
-		int speedInt = getInstallation().iomod.getSpeed();
-		double speed = speedInt;
- 		view.setIOvalues(String.valueOf(voltage/100), String.valueOf(current/10), String.valueOf(speed/100));
+		try {
+			int voltageInt = getInstallation().iomod.getVoltage();
+			double voltage = voltageInt;
+			int currentInt = getInstallation().iomod.getCurrent();
+			double current = currentInt;
+			int speedInt = getInstallation().iomod.getSpeed();
+			double speed = speedInt;
+			view.setIOvalues(String.valueOf(voltage/100), String.valueOf(current/10), String.valueOf(speed/100));
+		} catch (Exception e) {}		
 	}
 
 }

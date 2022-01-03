@@ -43,6 +43,23 @@ public class FroniusSetupView implements SwingInstallationNodeView<Contribution>
         robot_ready = new JCheckBox();
         error_reset = new JCheckBox();       
     }  
+
+    public Box licenseCheck(final Contribution contribution){
+        Box box = style.createSection(BoxLayout.LINE_AXIS);
+        final JTextField key = style.createInput();
+        JLabel label = new JLabel("Product key for " + Contribution.serial_num);
+        key.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mousePressed(MouseEvent e){
+                key.setText("");
+                KeyboardTextInput keyboardTextInput = contribution.getKeyboardTextInputKey();
+                keyboardTextInput.show(key, contribution.gKeyboardInputCallbackKey(key, Contribution.PRODUCT_KEY_KEY));
+            }
+        });
+        box.add(label);
+        box.add(key);
+        return box;
+    }
     
     public void isConnected(){
         model_dropmenu.setEnabled(false);
@@ -147,7 +164,7 @@ public class FroniusSetupView implements SwingInstallationNodeView<Contribution>
         line_section.add(style.spaceComponent(115, 0));
         line_section.add(imageSection("/impl/TPS320i.png"));
         return line_section;
-    }
+    } 
 
     private Box boxLineComboSection(final Contribution contribution, JLabel label, JComboBox comboBox){
         Box line_section = style.createSection(BoxLayout.LINE_AXIS);

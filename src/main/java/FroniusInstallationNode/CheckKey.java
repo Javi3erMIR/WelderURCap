@@ -4,9 +4,8 @@ public class CheckKey {
     private String key;
     private String serial;
     
-    public CheckKey(String key, String serial){
+    public CheckKey(String key){
         this.key = key;
-        this.serial = serial;
     }
 
     private int checkSerialSum(){
@@ -18,7 +17,9 @@ public class CheckKey {
         return sum;
     }
 
-    public boolean checKeyBySerial(){
+    public boolean checKeyBySerial(String serial){
+        this.serial = serial;
+        checkSerialSum();
         int sum = 0;
         int sum_serial = checkSerialSum();
         char[] ary = key.toCharArray();

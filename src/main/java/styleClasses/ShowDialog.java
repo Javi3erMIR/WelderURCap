@@ -21,6 +21,7 @@ public class ShowDialog extends JOptionPane{
 
     public void showCustomDialog(){
         String[] op_btns = {"OK", "Cancel"};
+        String[] op_btns_1 = {"OK"};
         if(dialog_type == "Option"){
             UIManager.put("RootPane.frameBorder", new LineBorder(Color.black));
             UIManager.put("RootPane.dialogBorder", new LineBorder(Color.black));    
@@ -32,6 +33,19 @@ public class ShowDialog extends JOptionPane{
                                                   JOptionPane.INFORMATION_MESSAGE, 
                                                   null, 
                                                   op_btns, 
+                                                  "");
+        }
+        if(dialog_type == "OptionWithoutCancel"){
+            UIManager.put("RootPane.frameBorder", new LineBorder(Color.black));
+            UIManager.put("RootPane.dialogBorder", new LineBorder(Color.black));    
+            UIManager.put("RootPane.errorDialogBorder", new LineBorder(Color.black));
+            btn_option = super.showOptionDialog(null, 
+                                                  message, 
+                                                  "Warning!", 
+                                                  0, 
+                                                  JOptionPane.INFORMATION_MESSAGE, 
+                                                  null, 
+                                                  op_btns_1, 
                                                   "");
         }
         if(dialog_type == "Message"){

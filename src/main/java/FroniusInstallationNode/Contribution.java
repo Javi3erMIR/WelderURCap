@@ -3,9 +3,10 @@ package FroniusInstallationNode;
 import java.awt.EventQueue;
 import java.util.Timer;
 import java.util.TimerTask;
-
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.plaf.PanelUI;
+import javax.swing.text.html.HTMLDocument.BlockElement;
 import com.ur.urcap.api.contribution.InstallationNodeContribution;
 import com.ur.urcap.api.contribution.installation.CreationContext;
 import com.ur.urcap.api.contribution.installation.InstallationAPIProvider;
@@ -36,9 +37,14 @@ public class Contribution implements InstallationNodeContribution{
 	public IOModbusState iomod;
 	private int flag = 0;
     public CheckKey license;
-    public static String PRODUCT_KEY;
-    private String serial_num;
-    private ShowDialog option_dialog;
+    public static String PRODUCT_KEY = "not_set";
+    public static String PRODUCT_KEY_KEY = "product_key";
+    public static String serial_num;
+    private ShowDialog option_dialog, connection_dialog;
+    private boolean fit = false;
+    private ScriptCommand command;
+    private int value = 0;
+    private int flag_1 = 0;
     
     public Contribution(InstallationAPIProvider apiProvider, FroniusSetupView view, DataModel model, CreationContext context){
         this.apiProvider = apiProvider.getInstallationAPI();
@@ -48,8 +54,16 @@ public class Contribution implements InstallationNodeContribution{
                                           .getUserInteraction()
                                           .getKeyboardInputFactory();
         sender = new ScriptSender();
+        command = new ScriptCommand("exceptions");
         serial_num = apiProvider.getSystemAPI().getRobotModel().getSerialNumber();
         option_dialog = new ShowDialog("Option", "Are you sure to connect?");
+        connection_dialog = new ShowDialog("Option", "Fronius Machine is disconnected");
+        license = new CheckKey(serial_num);
+    }
+
+    private void showExceptionPopup(String message){
+        command.appendLine("popup(\"" + message + "\")");
+        sender.sendScriptCommand(command);
     }
 
     public KeyboardTextInput getKeyboardTextInput(){
@@ -63,6 +77,25 @@ public class Contribution implements InstallationNodeContribution{
             public void onOk(String value) {
                model.set(key, value);
                view.setIpText(value);
+            }            
+        };
+    }
+
+    public KeyboardTextInput getKeyboardTextInputKey(){
+        KeyboardTextInput keyboardTextInput = keyboardInputFactory.createStringKeyboardInput();
+        return keyboardTextInput;
+    }
+
+    public KeyboardInputCallback<String> gKeyboardInputCallbackKey(final JTextField textField, final String key){
+        return new KeyboardInputCallback<String>() {
+            @Override
+            public void onOk(String value) {
+                model.set(key, value);
+                if(license.checKeyBySerial(value)){
+                    fit = true;
+                    view.panel_main.removeAll();
+                    openView();
+                }
             }            
         };
     }
@@ -174,7 +207,30 @@ public class Contribution implements InstallationNodeContribution{
     private void delay(int millis){
         try {
             Thread.sleep(millis);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            showExceptionPopup(e.getMessage());
+        }
+    }
+
+    private void connectionDialog(final boolean bool){        
+        new Thread(new Runnable() {
+            @Override
+            public void run() {                
+                while(bool){
+                    try {
+                        value = iomod.getValue();
+                        if(value==0){                        
+                            flag++;
+                            if(flag == 1)
+                                disconnectFunction();                     
+                        }
+                        else if(value==1)
+                            flag = 0;             
+                    } catch (Exception e) {}
+                    delay(250);
+                }
+            }            
+        }).start();
     }
 
     public void connectFunction() {
@@ -183,11 +239,18 @@ public class Contribution implements InstallationNodeContribution{
         addSignals();
         delay(250);
         robotReady();
+        delay(1000);           
         option_dialog.showCustomDialog();
-        if(ShowDialog.btn_option == 0) 
-            iomod.run();           
-        else
+        if(ShowDialog.btn_option == 0){
+            iomod.start();
+            delay(1000);
+            connectionDialog(true);    
+        }       
+        else{
+            connectionDialog(false);
+            delay(300);
             disconnectFunction();
+        }
 	}
     
     public void disconnectFunction(){
@@ -197,48 +260,44 @@ public class Contribution implements InstallationNodeContribution{
         deleteSignals();
         delay(250);
         iomod.killThread();
-        iomod.setValue(0);
         delay(250);
+        connectionDialog(false);
+        delay(300);
+        iomod.setValue(0);        
+        delay(1000);
+        iomod = null;
+        view.isDisconnected();
+        view.indicator_led_label.setVisible(false);
+        view.connection_indicator.setText("Disconnected");
     }
 
     private void updateUI() {
         if(iomod != null){
-            if(iomod.getPower()[0]) {
+            if(iomod.getPower()[0])
                 view.indicator_led_label.setVisible(true);
-            }else if(!iomod.getPower()[0]){
+            else if(!iomod.getPower()[0])
                 view.indicator_led_label.setVisible(false);
-            }
-            if(iomod.getValue() == 1) {
+            if(iomod.getValue() == 1)
                 view.connection_indicator.setText("Connected");
-            }
-            else if(iomod.getValue() == 0) {
+            else if(iomod.getValue() == 0)
                 view.connection_indicator.setText("Disconnected");
-            }
             String val = iomod.getWeldingProcess();
-            if(val.equals("00000")){
+            if(val.equals("00000"))
                 view.mode_indicator.setText("Internal Parameter Selection");
-            }
-            if(val.equals("10000")){
+            if(val.equals("10000"))
                 view.mode_indicator.setText("MIG/MAG pulse");
-            }
-            if(val.equals("01000")){
+            if(val.equals("01000"))
                 view.mode_indicator.setText("MIG/MAG Standard");
-            }
-            if(val.equals("11000")){
+            if(val.equals("11000"))
                 view.mode_indicator.setText("MIG/MAG PMC");
-            }
-            if(val.equals("00100")){
+            if(val.equals("00100"))
                 view.mode_indicator.setText("MIG/MAG LSC");
-            }
-            if(val.equals("10100")){
+            if(val.equals("10100"))
                 view.mode_indicator.setText("MIG/MAG standard manual");
-            }
-            if(val.equals("01100")){
+            if(val.equals("01100"))
                 view.mode_indicator.setText("Electrode");
-            }
-            if(val.equals("11100")){
+            if(val.equals("11100"))
                 view.mode_indicator.setText("TIG");
-            }
         }		
 	}
 
@@ -253,9 +312,8 @@ public class Contribution implements InstallationNodeContribution{
 			if(iomod.getTeachModeValue()[0])
 				iomod.setTeachMode(false);
 		}
-		if(item.equals("Teach Mode")){
+		if(item.equals("Teach mode"))
 			iomod.setTeachMode(true);
-		}
 	}
 
     public void setReady() {		
@@ -298,26 +356,34 @@ public class Contribution implements InstallationNodeContribution{
 		sender.sendScriptCommand(writer);
 	}
 
-    public void licenseKeyDialog(){
-        PRODUCT_KEY = JOptionPane.showInputDialog("Product key for " + serial_num);
+    public boolean licenseKeyDialog(){       
+        if(!fit){
+            flag_1++;
+            if(flag_1==1)
+                view.panel_main.add(view.licenseCheck(this));             
+        }
+        else
+            flag_1 = 0;
+        return fit;
     }
 
     @Override
     public void openView() {
-        
-        setModel();
-        uiTimer = new Timer(true);
-        uiTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                EventQueue.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateUI();                      
-                    }                    
-                });
-            }            
-        }, 0, 1000);
+        if(licenseKeyDialog()){
+            setModel();
+            uiTimer = new Timer(true);
+            uiTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    EventQueue.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateUI();                      
+                        }                    
+                    });
+                }            
+            }, 0, 1000);
+        }        
     }
 
     @Override
