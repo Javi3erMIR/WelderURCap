@@ -9,6 +9,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import com.ur.urcap.api.contribution.installation.swing.SwingInstallationNodeView;
 import com.ur.urcap.api.domain.userinteraction.keyboard.KeyboardTextInput;
+
+import styleClasses.ShowDialog;
 import styleClasses.Style;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,8 +41,25 @@ public class FroniusSetupView implements SwingInstallationNodeView<Contribution>
     public FroniusSetupView(Style style){
         this.style = style;
         robot_ready = new JCheckBox();
-        error_reset = new JCheckBox();
+        error_reset = new JCheckBox();       
     }  
+
+    public Box licenseCheck(final Contribution contribution){
+        Box box = style.createSection(BoxLayout.LINE_AXIS);
+        final JTextField key = style.createInput();
+        JLabel label = new JLabel("Product key for " + Contribution.serial_num);
+        key.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mousePressed(MouseEvent e){
+                key.setText("");
+                KeyboardTextInput keyboardTextInput = contribution.getKeyboardTextInputKey();
+                keyboardTextInput.show(key, contribution.gKeyboardInputCallbackKey(key, Contribution.PRODUCT_KEY_KEY));
+            }
+        });
+        box.add(label);
+        box.add(key);
+        return box;
+    }
     
     public void isConnected(){
         model_dropmenu.setEnabled(false);
@@ -74,9 +93,9 @@ public class FroniusSetupView implements SwingInstallationNodeView<Contribution>
         connect_btn = style.createButton("Connect", 110, 25);
         connect_btn.addActionListener(new ActionListener(){
             @Override
-            public void actionPerformed(ActionEvent arg0) {
+            public void actionPerformed(ActionEvent arg0) {                
+                isConnected();                
                 contribution.connectFunction();
-                isConnected();
             }
         });
         disconnect_btn = style.createButton("Disconnect", 125, 25);
@@ -145,7 +164,7 @@ public class FroniusSetupView implements SwingInstallationNodeView<Contribution>
         line_section.add(style.spaceComponent(115, 0));
         line_section.add(imageSection("/impl/TPS320i.png"));
         return line_section;
-    }
+    } 
 
     private Box boxLineComboSection(final Contribution contribution, JLabel label, JComboBox comboBox){
         Box line_section = style.createSection(BoxLayout.LINE_AXIS);
@@ -301,6 +320,9 @@ public class FroniusSetupView implements SwingInstallationNodeView<Contribution>
                         panel_main.removeAll();
                         panel_main.add(layoutSection2(contribution));
                     }
+                }
+                if(op == 1){
+                    model_dropmenu.setSelectedItem(contribution.setModel());
                 }
             }
         });          

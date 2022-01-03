@@ -1,9 +1,14 @@
 package CommunicationClasses;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
+
+import javax.swing.JOptionPane;
+
 //Support library for connection status
 import EasyModbus.ModbusClient;
-import java.io.IOException;
 /*Class for check connection status*/
+import styleClasses.ShowDialog;
 
 public class IOModbusState extends Thread {
 
@@ -12,6 +17,9 @@ public class IOModbusState extends Thread {
 	private boolean[] inputs;
 	private String IP;
 	public ModbusClient client;
+	private ScriptCommand command;
+	private ScriptSender sender;
+	private ShowDialog dialog;
 
 	public IOModbusState(String IP){
 		value = 0;
@@ -19,39 +27,42 @@ public class IOModbusState extends Thread {
 		bool = true;
 		this.IP = IP;
 		client = new ModbusClient(this.IP, 502);
+		command = new ScriptCommand("ClassSpecial");
+		sender = new ScriptSender();		
 	}
 
 	@Override
 	public void run() {
 		try {
-			client.Connect();
+			//client.Disconnect();
 			Thread.sleep(100);
+			client.Connect();
 			if (client.isConnected()) {				
 				while (bool) {
 					inputs = client.ReadDiscreteInputs(1, 1);
 					Thread.sleep(250);
-					if (inputs[0]) {
-						value = 1;
-					} 
+					if (inputs[0]) 
+						value = 1;					
 					else if (!inputs[0]) {
+						killThread();
 						flag++;
 						value = 0;
 						client.WriteSingleCoil(1, false);
-						client.Disconnect();
-						killThread();
+						client.Disconnect();					
 					}
 				}
 				client.Disconnect();
 			}
-		} catch (Exception e) {
-			flag++;
-			value = 0;
-			try {
-				client.Disconnect();
-			} catch (IOException ioException) {
-				ioException.printStackTrace();
-			}
-		}
+		} catch (UnknownHostException e) {
+			command.appendLine("popup(\""+e.getMessage()+"\")");
+			sender.sendScriptCommand(command);
+		} catch (IOException e) {
+			command.appendLine("popup(\""+e.getMessage()+"\")");
+			sender.sendScriptCommand(command);
+		} catch(Exception e){
+			command.appendLine("popup(\""+e.getMessage()+"\")");
+			sender.sendScriptCommand(command);
+		}		
 	}
 
 	//Welding mode methods-----------------------------------------------------------------------------------------------------------------------------------------------
@@ -110,7 +121,7 @@ public class IOModbusState extends Thread {
 	}
 
 	public boolean[] getTeachModeValue() {
-		boolean[] values = {};
+		boolean[] values = new boolean[1];
 		try {
 			if (client.isConnected())
 				values = client.ReadCoils(25, 1);
@@ -260,4 +271,8 @@ public class IOModbusState extends Thread {
 	public void setFlag(int fla) {
 		this.flag = fla;
 	}
+
+	public void startLoop(){
+		this.bool = true;
+	}	
 }
