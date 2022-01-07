@@ -356,4 +356,8 @@ public class FroniusSetupView implements SwingInstallationNodeView<Contribution>
     public JComboBox getModeTPSi(){
         return mode_drop_menu;
     }
+
+    public void setComboModelEnabled(boolean state){
+        model_dropmenu.setEnabled(state);
+    }
 }

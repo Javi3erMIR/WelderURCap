@@ -359,11 +359,15 @@ public class Contribution implements InstallationNodeContribution{
     public boolean licenseKeyDialog(){       
         if(!fit){
             flag_1++;
-            if(flag_1==1)
+            if(flag_1==1){
                 view.panel_main.add(view.licenseCheck(this));             
+                view.setComboModelEnabled(false);
+            }                
         }
-        else
+        else{
             flag_1 = 0;
+            view.setComboModelEnabled(true);
+        }            
         return fit;
     }
 
