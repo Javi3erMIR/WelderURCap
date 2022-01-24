@@ -118,11 +118,11 @@ public class Contribution implements InstallationNodeContribution{
         return str;
     }
 
-    public void setIOmenu(int index) {
+    public void setInWeld(int index) {
 		ioweld = index;
 	}
 	
-	public void setIOmenuR(int index) {
+	public void setInReady(int index) {
 		ioready = index;
 	}
 
@@ -332,6 +332,14 @@ public class Contribution implements InstallationNodeContribution{
 		}		
 	}
 
+    public void errorReset(String state){
+        if(view.getModelMenu().getSelectedItem().equals("TPS MagicWave")) {
+			ScriptCommand writer = new ScriptCommand("RobotReadyOuts");
+			writer.appendLine("set_digital_out(" + reset_in + ", "+ state +")");
+			sender.sendScriptCommand(writer);
+		}	
+    }
+
     public void setModeTig(String item) {
 		ScriptCommand writer = new ScriptCommand("WeldingTigMode");
 		if(item.equals("Job mode")) {
@@ -346,14 +354,6 @@ public class Contribution implements InstallationNodeContribution{
 			writer.appendLine("set_digital_out(4, False)");
 			sender.sendScriptCommand(writer);
 		}
-	}
-
-    public void errorReset() {
-		ScriptCommand writer = new ScriptCommand("Mode");
-		writer.appendLine("set_digital_out(5, True)");
-		writer.appendLine("sleep(2)");
-		writer.appendLine("set_digital_out(5, False)");
-		sender.sendScriptCommand(writer);
 	}
 
     public boolean licenseKeyDialog(){       

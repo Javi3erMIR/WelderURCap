@@ -25,17 +25,17 @@ public class FroniusSetupView implements SwingInstallationNodeView<Contribution>
 
     private Style style;
     private JComboBox model_dropmenu, 
-        mode_drop_menu, 
-        weld_in_drop_menu, 
-        rob_ready_drop_menu, 
-        source_error_drop_menu,
-        mode_drop_menutps;
+                      mode_drop_menu, 
+                      weld_in_drop_menu, 
+                      rob_ready_drop_menu, 
+                      source_error_drop_menu,
+                      mode_drop_menutps;
     private JButton connect_btn, disconnect_btn;
     public JPanel panel_main = new JPanel();
     private JTextField ip_input;
     public JLabel indicator_led_label,
-                   connection_indicator,
-                   mode_indicator;
+                  connection_indicator,
+                  mode_indicator;
     private JCheckBox robot_ready, error_reset;
 
     public FroniusSetupView(Style style){
@@ -188,10 +188,10 @@ public class FroniusSetupView implements SwingInstallationNodeView<Contribution>
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 if(ready_check.isSelected()){
-                    //do something
+                    contribution.setReady();
                 } 
                 if(!ready_check.isSelected()){
-                    //do something
+                    contribution.setNotReady();
                 }               
             }
         });
@@ -199,10 +199,10 @@ public class FroniusSetupView implements SwingInstallationNodeView<Contribution>
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 if(error.isSelected()){
-                    //do something
+                    contribution.errorReset("True");
                 }
                 if(!error.isSelected()){
-                    //do something
+                    contribution.errorReset("False");
                 }
             }
         });
@@ -225,21 +225,28 @@ public class FroniusSetupView implements SwingInstallationNodeView<Contribution>
         weld_in_drop_menu.addItemListener(new ItemListener(){
             @Override
             public void itemStateChanged(ItemEvent arg0) {
-                //do something
+                int index = weld_in_drop_menu.getSelectedIndex();
+                if(arg0.getStateChange() == ItemEvent.SELECTED){
+                    contribution.ioweld = index;
+                }
             }
         });
         rob_ready_drop_menu = style.createComboBoxComponent(160, 25, items);
         rob_ready_drop_menu.addItemListener(new ItemListener(){
             @Override
             public void itemStateChanged(ItemEvent arg0) {
-                //do something
+                if(arg0.getStateChange() == ItemEvent.SELECTED){
+                    contribution.setInWeld(weld_in_drop_menu.getSelectedIndex());
+                }
             }
         });
         source_error_drop_menu = style.createComboBoxComponent(160, 25, items);
         source_error_drop_menu.addItemListener(new ItemListener(){
             @Override
             public void itemStateChanged(ItemEvent arg0) {
-                //do something
+                if(arg0.getStateChange() == ItemEvent.SELECTED){
+                    contribution.setResetIn(source_error_drop_menu.getSelectedIndex());
+                }
             }
         });
         String[] mode_items = {"Select welding mode...", "Internal parameters", "Job mode"};
@@ -249,13 +256,13 @@ public class FroniusSetupView implements SwingInstallationNodeView<Contribution>
             public void itemStateChanged(ItemEvent arg0) {
                 if(arg0.getStateChange() == ItemEvent.SELECTED){
                     if(mode_drop_menutps.getSelectedItem().equals("Select welding mode...")){
-                        //do something
+                        contribution.setModeTig(mode_drop_menutps.getSelectedItem().toString());
                     }
                     if(mode_drop_menutps.getSelectedItem().equals("Internal parameters")){
-                        //do something
+                        contribution.setModeTig(mode_drop_menutps.getSelectedItem().toString());
                     }
                     if(mode_drop_menutps.getSelectedItem().equals("Job mode")){
-                        //do something
+                        contribution.setModeTig(mode_drop_menutps.getSelectedItem().toString());
                     }
                 }            
             }
